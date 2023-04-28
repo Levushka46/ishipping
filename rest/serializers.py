@@ -10,7 +10,15 @@ class TestObject():
 class TestObjectSerializer(Serializer):
     stroka = CharField()
 
+
 class ShipmentTypeSerializer(ModelSerializer):
     class Meta:
         model = ShipmentType
         fields = ['id', 'name']
+    
+
+class ShipmentSerializer(ModelSerializer):
+    shipment_type = CharField(source='shipment_type.name')
+    class Meta:
+        model = Shipment
+        fields = ['id', 'name', 'weight', 'shipment_type', 'worth', 'shipping_cost']

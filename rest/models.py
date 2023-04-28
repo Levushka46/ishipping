@@ -6,6 +6,7 @@ class ShipmentType(models.Model):
     def __str__(self):
         return self.name
 
+
 class Shipment(models.Model):
     name = models.CharField(max_length=256)
     weight = models.IntegerField()
