@@ -7,7 +7,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.exceptions import ParseError
-from .serializers import TestObject, TestObjectSerializer, ShipmentTypeSerializer, ShipmentSerializer
+from rest_framework.mixins import CreateModelMixin
+from .serializers import TestObject, TestObjectSerializer, ShipmentTypeSerializer, ShipmentSerializer, RegisterShipmentSerializer
 from .models import ShipmentType, Shipment
 
 def index(request):
@@ -27,15 +28,11 @@ class ShipmentTypeListView(ListAPIView):
     serializer_class = ShipmentTypeSerializer
 
 
-class ShipmentViewSet(ReadOnlyModelViewSet):
+class ShipmentViewSet(CreateModelMixin, ReadOnlyModelViewSet):
     serializer_class = ShipmentSerializer
     pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
-        """
-        Optionally restricts the returned purchases to a given user,
-        by filtering against a `username` query parameter in the URL.
-        """
         queryset = Shipment.objects.all()
         shipment_type = self.request.query_params.get('shipment_type')
         shipping_cost = self.request.query_params.get('shipping_cost')
@@ -55,3 +52,9 @@ class ShipmentViewSet(ReadOnlyModelViewSet):
             except ValueError:
                 raise ParseError('shipping_cost should be bool (True or False)')
         return queryset
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return RegisterShipmentSerializer
+            
+        return super().get_serializer_class()
