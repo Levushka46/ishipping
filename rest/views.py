@@ -20,7 +20,7 @@ class TestView(APIView):
     def get(self, *args, **kwargs):
         instance = TestObject()
         serializer = TestObjectSerializer(instance)
-        return Response(serializer.data)
+        return Response(self.request.session)
 
 
 class ShipmentTypeListView(ListAPIView):
@@ -33,7 +33,7 @@ class ShipmentViewSet(CreateModelMixin, ReadOnlyModelViewSet):
     pagination_class = LimitOffsetPagination
 
     def get_queryset(self):
-        queryset = Shipment.objects.all()
+        queryset = Shipment.objects.filter(id__in=self.request.session.get('shipment_ids', []))
         shipment_type = self.request.query_params.get('shipment_type')
         shipping_cost = self.request.query_params.get('shipping_cost')
 
@@ -56,5 +56,11 @@ class ShipmentViewSet(CreateModelMixin, ReadOnlyModelViewSet):
     def get_serializer_class(self):
         if self.action == "create":
             return RegisterShipmentSerializer
-            
+
         return super().get_serializer_class()
+    
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        shipment_ids = self.request.session.get('shipment_ids', [])
+        shipment_ids.append(instance.id)
+        self.request.session['shipment_ids'] = shipment_ids
