@@ -130,5 +130,12 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TASK_TRACK_STARTED = True
+CELERY_BEAT_SCHEDULE = {
+    'Task_two_schedule' : {  # whatever the name you want 
+        'task': 'taskqueue.tasks.calc_shipping_cost', # name of task with path
+        'schedule': 300, # 30 runs this task every 30 seconds
+        'args' : ()
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
