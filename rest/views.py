@@ -10,6 +10,7 @@ from rest_framework.exceptions import ParseError
 from rest_framework.mixins import CreateModelMixin
 from .serializers import TestObject, TestObjectSerializer, ShipmentTypeSerializer, ShipmentSerializer, RegisterShipmentSerializer
 from .models import ShipmentType, Shipment
+from taskqueue.tasks import calc_shipping_cost
 
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
@@ -20,6 +21,7 @@ class TestView(APIView):
     def get(self, *args, **kwargs):
         instance = TestObject()
         serializer = TestObjectSerializer(instance)
+        calc_shipping_cost.apply_async()
         return Response(self.request.session)
 
 
