@@ -1,6 +1,7 @@
 FROM python:3.8-bullseye
 
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE 1
 
 RUN apt-get update \
   # dependencies for building Python packages
@@ -18,7 +19,6 @@ RUN pip install -r /app/requirements.txt
 
 COPY . /app
 
-RUN chmod +x /app/migrate.sh
 RUN chmod +x /app/start.sh
 RUN chmod +x /app/start-celery-worker.sh
 RUN chmod +x /app/start-celery-beat.sh
